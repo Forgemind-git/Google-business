@@ -1,0 +1,1225 @@
+{
+  "name": "Google business profile",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        200
+      ],
+      "id": "497377e9-2bae-4e86-aaa0-b1065c7bb1ec",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "review",
+        "operation": "getAll",
+        "account": {
+          "__rl": true,
+          "value": "accounts/104814911894253621092",
+          "mode": "list",
+          "cachedResultName": "forgemind"
+        },
+        "location": {
+          "__rl": true,
+          "value": "locations/1932607719129894007",
+          "mode": "list",
+          "cachedResultName": "locations/1932607719129894007"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleBusinessProfile",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        200
+      ],
+      "id": "91ce36ad-918c-44b8-9607-b42facc6ed06",
+      "name": "Google Business Profile",
+      "credentials": {
+        "googleBusinessProfileOAuth2Api": {
+          "id": "A1mCNu8jhl6qFcSv",
+          "name": "Google Business Profile account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng",
+          "mode": "list",
+          "cachedResultName": "Business profile comments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 512407064,
+          "mode": "list",
+          "cachedResultName": "Google business",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit#gid=512407064"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Review ID": "={{ $json.reviewId }}",
+            "Created time": "={{ $json.createTime.toDateTime().format('dd/MM/yyyy HH:mm') }}",
+            "Stars": "={{ $json.starRating }}",
+            "Review": "={{ $json.comment }}",
+            "Name": "={{ $json.reviewer.displayName }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review",
+              "displayName": "Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stars",
+              "displayName": "Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created time",
+              "displayName": "Created time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -40,
+        100
+      ],
+      "id": "b9418e9f-587d-4397-b2bc-ccebeb017c40",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qo0PkoqWQxHpxFzc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        500,
+        160
+      ],
+      "id": "f552e241-d73a-48f9-b363-a0281b5b8443",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bFhM1Ps4YfzVOtHS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2e4fe07-393f-469e-8a66-bc1e510fc33b",
+              "leftValue": "={{ $json.Review }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        200,
+        280
+      ],
+      "id": "abe3de02-61a0-4b34-aa7b-784c8e847967",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $('If').item.json.Review }}",
+        "options": {
+          "categories": "Positive, Neutral, Negative"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "4e7fa630-f473-4bbf-b109-0209b19f7f58",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n// Input: Assume incoming data contains a field named 'text'\nconst Input = item.json.response.text;\n\n// Remove all formatting characters including newlines, carriage returns, tabs, etc.\nitem.json.cleanedtext = Input.replace(/[\\r\\n\\t\\f\\v\\u00A0\\u2028\\u2029]+/g, ' ').replace(/\\s+/g, ' ').trim();\n\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        0
+      ],
+      "id": "8ee6b85a-a38f-416a-ba5d-59f94103bf44",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "account": {
+          "__rl": true,
+          "value": "accounts/104814911894253621092",
+          "mode": "list",
+          "cachedResultName": "forgemind"
+        },
+        "location": {
+          "__rl": true,
+          "value": "locations/1932607719129894007",
+          "mode": "list",
+          "cachedResultName": "locations/1932607719129894007"
+        }
+      },
+      "type": "n8n-nodes-base.googleBusinessProfileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ],
+      "id": "4d8834cc-7dcc-4a66-9bcd-55519a02d15d",
+      "name": "Google Business New Review",
+      "credentials": {
+        "googleBusinessProfileOAuth2Api": {
+          "id": "A1mCNu8jhl6qFcSv",
+          "name": "Google Business Profile account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "summarizationMethodAndPrompts": {
+            "values": {
+              "summarizationMethod": "stuff",
+              "prompt": "=Write a concise summary of the following in 3-4 words.\n\"{{$json.Review}}\"\n\nCONCISE SUMMARY:"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "typeVersion": 2,
+      "position": [
+        380,
+        0
+      ],
+      "id": "1c70065f-16e7-475e-af26-6c01497c7e59",
+      "name": "Review Summarization "
+    },
+    {
+      "parameters": {
+        "content": "## AI  Zone (Google business Review Analysis)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        "height": 500,
+        "width": 1740,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        360,
+        -180
+      ],
+      "id": "08c61652-60dd-47e3-bcdf-a346ef4568d3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Customer Support Team Notify",
+        "height": 820,
+        "width": 260,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2300,
+        -340
+      ],
+      "id": "bd22740f-10d3-455e-bef3-3e6073696a62",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Google business review extraction\n## Google Maps",
+        "height": 500,
+        "width": 480,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -100
+      ],
+      "id": "317ceb88-b45e-49b7-8e14-26b6853d7d1e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Stars:{{ $('If').item.json.Stars }}\nReview:{{ $('If').item.json.Review }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Is the Review matching with stars provided? The stars means the rating that is provided for the review, and it is out of 5 stars. Respond in either yes/no."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        1380,
+        0
+      ],
+      "id": "ded9b8a3-5a58-4ec2-9035-a22afadbc955",
+      "name": "Review Contradict Finder"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $('If').item.json.Review }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "3D printing service",
+              "description": "Classify if the above text is related to services provided by the business"
+            },
+            {
+              "category": "3D printing training",
+              "description": "Classify if the above text is related to training provided by the business"
+            }
+          ]
+        },
+        "options": {
+          "fallback": "other",
+          "enableAutoFixing": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        0
+      ],
+      "id": "c5ac77d0-a501-4830-a51a-351eb9491506",
+      "name": "Review Classifier",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng",
+          "mode": "list",
+          "cachedResultName": "Business profile comments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1412352221,
+          "mode": "list",
+          "cachedResultName": "3D printing service",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit#gid=1412352221"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Review ID": "={{ $('If').item.json[\"Review ID\"] }}",
+            "Created time": "={{ $('If').item.json[\"Created time\"] }}",
+            "Stars": "={{ $('If').item.json.Stars }}",
+            "Review": "={{ $('If').item.json.Review }}",
+            "Name": "={{ $('If').item.json.Name }} ",
+            "Summary": "={{ $('Review Summarization ').item.json.response.text }}",
+            "Sentiment analysis": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}",
+            "Is review matching with Stars": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review",
+              "displayName": "Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stars",
+              "displayName": "Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created time",
+              "displayName": "Created time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment analysis",
+              "displayName": "Sentiment analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is review matching with Stars",
+              "displayName": "Is review matching with Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        -220
+      ],
+      "id": "f16e1875-e6ff-4adf-86ed-95c4a1a32010",
+      "name": "3d Printing",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qo0PkoqWQxHpxFzc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng",
+          "mode": "list",
+          "cachedResultName": "Business profile comments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1949429791,
+          "mode": "list",
+          "cachedResultName": "3D printing training",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit#gid=1949429791"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Review ID": "={{ $('If').item.json[\"Review ID\"] }}",
+            "Created time": "={{ $('If').item.json[\"Created time\"] }}",
+            "Stars": "={{ $('If').item.json.Stars }}",
+            "Review": "={{ $('If').item.json.Review }}",
+            "Name": "={{ $('If').item.json.Name }} ",
+            "Summary": "={{ $('Review Summarization ').item.json.response.text }}",
+            "Sentiment analysis": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}",
+            "Is review matching with Stars": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review",
+              "displayName": "Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stars",
+              "displayName": "Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created time",
+              "displayName": "Created time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment analysis",
+              "displayName": "Sentiment analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is review matching with Stars",
+              "displayName": "Is review matching with Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        -40
+      ],
+      "id": "e9ccffaa-b57c-4422-b2ef-8ce47e4dddde",
+      "name": "3d Printing Training",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qo0PkoqWQxHpxFzc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng",
+          "mode": "list",
+          "cachedResultName": "Business profile comments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 123589198,
+          "mode": "list",
+          "cachedResultName": "Others",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit#gid=123589198"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Review ID": "={{ $('If').item.json[\"Review ID\"] }}",
+            "Created time": "={{ $('If').item.json[\"Created time\"] }}",
+            "Stars": "={{ $('If').item.json.Stars }}",
+            "Name": "={{ $('If').item.json.Name }} ",
+            "Summary": "={{ $('Review Summarization ').item.json.response.text }}",
+            "Sentiment analysis": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}",
+            "Is review matching with Stars": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stars",
+              "displayName": "Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created time",
+              "displayName": "Created time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment analysis",
+              "displayName": "Sentiment analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is review matching with Stars",
+              "displayName": "Is review matching with Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        140
+      ],
+      "id": "16d4a969-042c-45e1-89a1-5d393ee8ef05",
+      "name": "Other",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qo0PkoqWQxHpxFzc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng",
+          "mode": "list",
+          "cachedResultName": "Business profile comments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 123589198,
+          "mode": "list",
+          "cachedResultName": "Others",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MtpQqbwhkDx65-_WEC37iM0h-Qa9JO-biqUP1i_PZng/edit#gid=123589198"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Review ID": "={{ $json[\"Review ID\"] }}",
+            "Created time": "={{ $json[\"Created time\"] }}",
+            "Stars": "={{ $json.Stars }}",
+            "Name": "={{ $json.Name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stars",
+              "displayName": "Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created time",
+              "displayName": "Created time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        300
+      ],
+      "id": "d0e3dea9-4eb7-4617-8f76-e1503bddf864",
+      "name": "No Review only Star",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qo0PkoqWQxHpxFzc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "581877381684738",
+        "recipientPhoneNumber": "=+91{{ $cust_support_team }}",
+        "template": "google_review_notification|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.Stars }}"
+                  },
+                  {
+                    "text": "={{ $('Code').item.json.cleanedtext }}"
+                  },
+                  {
+                    "text": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}"
+                  },
+                  {
+                    "text": "={{ $('Review Contradict Finder').item.json.text }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        -220
+      ],
+      "id": "0202de83-8724-46ed-b981-c53fefcc2f81",
+      "name": "Customer Support Team",
+      "webhookId": "8f3c3e2b-0cc1-4930-adad-4eb655b5e66b",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lL1GgrllRKYWJV0E",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "581877381684738",
+        "recipientPhoneNumber": "=+91{{ $cust_support_team }}",
+        "template": "3d_printing_training|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.Stars }}"
+                  },
+                  {
+                    "text": "={{ $('Code').item.json.cleanedtext }}"
+                  },
+                  {
+                    "text": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}"
+                  },
+                  {
+                    "text": "={{ $('Review Contradict Finder').item.json.text }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        -40
+      ],
+      "id": "c7a6efa0-f71c-46b4-882c-d5825cedffbc",
+      "name": "Customer Support Team1",
+      "webhookId": "8f3c3e2b-0cc1-4930-adad-4eb655b5e66b",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lL1GgrllRKYWJV0E",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "581877381684738",
+        "recipientPhoneNumber": "=+91{{ $cust_support_team }}",
+        "template": "google_review_others_category|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.Stars }}"
+                  },
+                  {
+                    "text": "={{ $('Code').item.json.cleanedtext }}"
+                  },
+                  {
+                    "text": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}"
+                  },
+                  {
+                    "text": "={{ $('Review Contradict Finder').item.json.text }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        140
+      ],
+      "id": "99f3dd53-4996-42e0-85af-247939501d17",
+      "name": "Customer Support Team2",
+      "webhookId": "8f3c3e2b-0cc1-4930-adad-4eb655b5e66b",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lL1GgrllRKYWJV0E",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "581877381684738",
+        "recipientPhoneNumber": "=+91{{ $cust_support_team }}",
+        "template": "google_review_others|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.Stars }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        300
+      ],
+      "id": "25a18ff0-5206-472f-8fc3-e68c5250443c",
+      "name": "Customer Support Team3",
+      "webhookId": "0c65d951-53fc-4cb6-839a-9f8a911da4f5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lL1GgrllRKYWJV0E",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Business Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Business Profile": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Review Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Review Summarization ",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Review Contradict Finder",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Review Summarization ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Review only Star",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Review Contradict Finder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Review Contradict Finder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Review Contradict Finder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Business New Review": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Summarization ": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Contradict Finder": {
+      "main": [
+        [
+          {
+            "node": "Review Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Classifier": {
+      "main": [
+        [
+          {
+            "node": "3d Printing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3d Printing Training",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3d Printing": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3d Printing Training": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Team1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Other": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Team2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Review only Star": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Team3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "392c2df8-4d7f-41ad-95fa-9e07b7024234",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "030862b1dcaff3ff9cb8f16544487a6b16cf430e1deb04f332ab7722f5f563bd"
+  },
+  "id": "2CoQIoJ16Z6hDhb2",
+  "tags": []
+}
